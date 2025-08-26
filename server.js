@@ -4,15 +4,19 @@
 const express = require('express');
 const cors = require('cors');
 const { MongoClient } = require('mongodb');
+const path = require('path'); // Ajoutez cette ligne pour le module 'path'
 
 // 2. Initialisation de l'application Express
 const app = express();
 const port = process.env.PORT || 3000;
 
 // 3. Middlewares pour gérer les requêtes et les ressources statiques
-app.use(express.json()); // Pour analyser les corps de requêtes au format JSON
-app.use(cors()); // Pour permettre les requêtes depuis votre front-end
-app.use(express.static('public')); // Pour servir les fichiers HTML, CSS, etc.
+app.use(express.json());
+app.use(cors());
+
+// Configurez Express pour servir tous les fichiers statiques depuis le répertoire racine
+// (celui où se trouve server.js et index.html)
+app.use(express.static(__dirname));
 
 // 4. Configuration de la connexion à la base de données
 const uri = process.env.MONGODB_URI;
@@ -31,7 +35,7 @@ connectToDb();
 
 // 5. Définition des routes de l'API (vos anciennes fonctions)
 
-// Route pour soumettre un avis (basée sur submit-avis.js)
+// Route pour soumettre un avis
 app.post('/submit-avis', async (req, res) => {
   try {
     const { nom, avis, note } = req.body;
@@ -59,7 +63,7 @@ app.post('/submit-avis', async (req, res) => {
   }
 });
 
-// Route pour récupérer les avis (basée sur get-avis.js)
+// Route pour récupérer les avis
 app.get('/get-avis', async (req, res) => {
   try {
     const database = client.db("phi-agencies");
