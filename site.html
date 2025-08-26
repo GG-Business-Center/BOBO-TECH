@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nos Projets - PHI AGENCIES</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        .header {
+            background-color: #0d2c52;
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            padding-top: 30px; /* Ajout d'un padding pour un meilleur espacement */
+            padding-bottom: 30px;
+        }
+
+        /* Style du bouton de retour */
+        .back-button {
+            position: absolute;
+            left: 20px;
+            top: 25px; /* Positionnement plus haut */
+            color: white;
+            font-size: 1.5em;
+            text-decoration: none;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+
+        .back-button:hover {
+            transform: scale(1.1);
+            color: #ccc;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        .header p {
+            margin: 5px 0 0;
+            font-size: 1.2em;
+            font-weight: 300;
+        }
+
+        .portfolio-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .project {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 40px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .project-header {
+            background-color: #1a4d8c;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            width: fit-content;
+        }
+
+        .project-title {
+            font-size: 2.5em;
+            margin: 0;
+            color: white;
+        }
+
+        .project-tagline {
+            color: #555;
+            font-size: 1.2em;
+            margin-bottom: 25px;
+        }
+
+        .project-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .project-details {
+            margin-top: 25px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .project-details h3 {
+            color: #1a4d8c;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .project-details ul {
+            list-style-type: none;
+            padding-left: 0;
+            display: inline-block;
+            text-align: left;
+            max-width: 600px;
+        }
+
+        .project-details li {
+            background-color: #e8f0fe;
+            border-radius: 5px;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .project-details li i {
+            color: #1a4d8c;
+            margin-right: 10px;
+        }
+        
+        .project-images {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            margin-top: 25px;
+        }
+
+        .project-images img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .project-images img:hover {
+            transform: scale(1.02);
+        }
+
+        .access-button {
+            display: inline-block;
+            background-color: #ff9800;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-top: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .access-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .access-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                120deg,
+                transparent,
+                rgba(255, 255, 255, 0.4),
+                transparent
+            );
+            transition: all 0.6s ease;
+            z-index: -1;
+        }
+
+        .access-button:hover::before {
+            left: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="back-button"><i class="fas fa-arrow-left"></i></a>
+        <h1>PHI AGENCIES</h1>
+        <p>Création de sites web, développement web, cybersécurité et plus encore.</p>
+    </header>
+
+    <main class="portfolio-container">
+        <section class="project">
+            <div class="project-header">
+                <h2 class="project-title">Business Biblio 📚</h2>
+            </div>
+            <p class="project-tagline">Une plateforme d'ebooks sur l'entrepreneuriat et le développement personnel.</p>
+            
+            <div class="project-content">
+                <div class="project-details">
+                    <h3>Fonctionnalités clés</h3>
+                    <ul>
+                        <li><i class="fas fa-book-open"></i>1000fr et accédez a une Bibliothèque de livres numériques pour le trading, le dropshipping, le développement personnel, et l'art oratoire.</li>
+                        <li><i class="fas fa-user-plus"></i> Système d'inscription et de paiement sécurisé (via PayDunya). </li>
+                        <li><i class="fas fa-link"></i>500 FCFA par personne parrainé inscrit: Gestion des liens de parrainage pour les utilisateurs.</li>
+                        <li><i class="fas fa-mobile-alt"></i> Interface utilisateur optimisée pour tous les appareils mobiles.</li>
+                    </ul>
+                </div>
+                
+                <div class="project-images">
+                    <img src="image/Capture d’écran 2025-08-23 à 14.24.39.png" alt="Page d'accueil de Business Biblio">
+                    <img src="image/affiche.jpg" alt="Affiche publicitaire de Business Biblio">
+                    <img src="image/ChatGPT Image 30 avr. 2025 à 00_03_18.png" alt="Interface d'inscription de Business Biblio">
+                </div>
+            </div>
+
+            <a href="https://businessbiblio.onrender.com/?parrain=22660692928" class="access-button" target="_blank">
+                Accéder au site
+            </a>
+        </section>
+
+        </main>
+</body>
+</html>

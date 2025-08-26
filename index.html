@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil - Bobo Tech</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="logo-container">
+        <img src="image/bobo.jpg" alt="Logo Bobo Tech" class="main-logo">
+    </div>
+
+    <header>
+        <div class="header-content-wrapper">
+            <div class="search-bar-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="searchInput" placeholder="Rechercher sur la boutique..." class="search-input">
+                <div class="search-actions">
+                    <button class="action-button scan-button" aria-label="Recherche par image"><i class="fas fa-camera"></i></button>
+                </div>
+            </div>
+            <nav class="categories-nav">
+                <div class="category-scroll-wrapper">
+                    <div class="category-scroll">
+                        <a href="#" class="category-item active" data-category="all">Toutes</a>
+                        <a href="#" class="category-item promo-item" data-category="promo">
+                            <i class="fas fa-tags promo-icon"></i>
+                            Promos
+                        </a>
+                        <a href="#" class="category-item" data-category="telephones_tablettes">Téléphones & Tablettes</a>
+                        <a href="#" class="category-item" data-category="ecouteurs_casques">Écouteurs & Casques</a>
+                        <a href="#" class="category-item" data-category="power_banks_energie">Power Banks & Énergie</a>
+                        <a href="#" class="category-item" data-category="montres_boomeur">Montres Connectées & boomeur</a>
+                        <a href="#" class="category-item" data-category="equipement_solaire">Équipements solaire</a>
+                        <a href="#" class="category-item" data-category="telephones_touches">Téléphone à touches</a>
+                        <a href="#" class="category-item" data-category="accessoires_divers">Accessoires Tech Divers</a>
+                    </div>
+                    <div class="category-scroll-gradient left"></div>
+                    <div class="category-scroll-gradient right"></div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="product-display">
+        <section class="products">
+            <div class="products-grid" id="product-list">
+                </div>
+        </section>
+    </main>
+
+    <footer class="bottom-menu">
+        <a href="index.html" class="menu-item active">
+            <i class="fas fa-home"></i>
+            <span>Accueil</span>
+        </a>
+        <a href="https://wa.me/votre_numero_whatsapp" class="menu-item" target="_blank">
+            <i class="fas fa-comments"></i>
+            <span>Messagerie</span>
+        </a>
+        <a href="panier.html" class="menu-item">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Panier</span>
+            <span class="cart-badge" id="cart-item-count">0</span>
+        </a>
+        <a href="avis.html" class="menu-item">
+            <i class="fas fa-star"></i>
+            <span>Avis</span>
+        </a>
+        <a href="site.html" class="menu-item">
+            <i class="fas fa-globe"></i>
+            <span>Nos sites</span>
+        </a>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

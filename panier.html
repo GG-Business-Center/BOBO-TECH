@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Panier - e-commerce</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header class="cart-page-header">
+        <a href="index.html" class="back-button" aria-label="Retour à l'accueil">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <h1 class="cart-page-title">Mon Panier</h1>
+    </header>
+
+    <main>
+        <div class="delivery-banner">
+            <i class="fas fa-truck-fast"></i> Livraison GRATUITE à Bobo-Dioulasso !
+        </div>
+
+        <div class="cart-container" id="cart-items-container">
+            <div class="empty-cart-message" id="empty-cart-message" style="display: none;">
+                <i class="fas fa-shopping-cart"></i>
+                <p>Votre panier est vide pour le moment.</p>
+                <p><a href="index.html">Découvrir nos produits !</a></p>
+            </div>
+        </div>
+
+        <div class="delivery-location-section">
+            <label for="delivery-location">Sélectionnez votre lieu de livraison à Bobo-Dioulasso :</label>
+            <select id="delivery-location" class="location-select">
+                <option value="">--- Choisissez un lieu ---</option>
+                <option value="Maison de la culture">Maison de la culture</option>
+                <option value="Place de la femme (Pharmacie Hereso)">Place de la femme (Pharmacie Hereso)</option>
+                <option value="Espace jeunesse dafra (sect 15)">Espace jeunesse dafra (sect 15)</option>
+                <option value="Cap Faso (sect 24)">Cap Faso (sect 24)</option>
+                <option value="ex. Station Total (sect 25)">ex. Station Total (sect 25)</option>
+                <option value="Rond-point 4 chevaux">Rond-point 4 chevaux</option>
+                <option value="Rond-point Place de la Nation(Gabriel Shoulet)">Rond-point Place de la Nation(Gabriel Shoulet)</option>
+                <option value="Sitarail">Sitarail</option>
+                <option value="Mairie Centrale de BOBO">Mairie Centrale de BOBO</option>
+                <option value="Usine Brakina">Usine Brakina</option>
+                <option value="Théâtre de l'amitier">Théâtre de l'amitier</option>
+                <option value="Station Shell pres du marché de Belle ville">Station Shell pres du marché de Belle ville</option>
+                <option value="En face de la cours de la SNC">En face de la cours de la SNC</option>
+                <option value="Stade Municipal">Stade Municipal</option>
+                <option value="Plateau Yéguéré">Plateau Yéguéré</option>
+                <option value="ENSP">ENSP</option>
+                <option value="Café miche d'or de Sakaby">Café miche d'or de Sakaby</option>
+                <option value="En face de Saramaya Transport">En face de Saramaya Transport</option>
+                <option value="Immeuble Wobgo">Immeuble Wobgo</option>
+                <option value="Cap Faso sur la route de BOBO 2010">Cap Faso sur la route de BOBO 2010</option>
+                <option value="Autres (précisez par WhatsApp)">Autres (précisez par WhatsApp)</option>
+            </select>
+        </div>
+
+
+        <div class="cart-summary">
+            <div class="cart-total">
+                <span>Total estimé :</span>
+                <span id="cart-total-price">0 FCFA</span>
+            </div>
+            <button class="checkout-whatsapp-btn" id="checkout-whatsapp-btn">
+                <i class="fab fa-whatsapp"></i> Passer ma commande via WhatsApp
+            </button>
+        </div>
+
+    </main>
+
+    <nav class="bottom-menu">
+        <a href="index.html" class="menu-item">
+            <i class="fas fa-home"></i>
+            <span>Accueil</span>
+        </a>
+        <a href="https://wa.me/22667472504" class="menu-item" target="_blank">
+            <i class="fas fa-comments"></i>
+            <span>Messagerie</span>
+        </a>
+        <a href="panier.html" class="menu-item active">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Panier</span>
+            <span class="cart-badge" id="cart-item-count">0</span>
+        </a>
+    </nav>
+
+    <script src="script.js"></script>
+    <script>
+        // Ce script est pour la page panier.html
+        document.addEventListener('DOMContentLoaded', () => {
+            const whatsappNumber = '22667472504';
+
+            // Les mêmes fonctions de gestion du panier que sur index.html
+            const getCart = () => {
+                try {
+                    return JSON.parse(localStorage.getItem('cart')) || [];
+                } catch (e) {
+                    console.error("Erreur de parsing du panier du Local Storage:", e);
+                    return [];
+                }
+            };
+
+            const saveCart = (cart) => {
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount(); // Mettre à jour le badge après chaque sauvegarde
+            };
+
+            const updateCartCount = () => {
+                const cart = getCart();
+                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                const cartCountElement = document.getElementById('cart-item-count');
+                if (cartCountElement) {
+                    cartCountElement.textContent = totalItems;
+                    if (totalItems > 0) {
+                        cartCountElement.classList.add('visible');
+                    } else {
+                        cartCountElement.classList.remove('visible');
+                    }
+                }
+            };
+
+            const calculateTotalPrice = (cart) => {
+                let total = 0;
+                cart.forEach(item => {
+                    const price = parseFloat(item.price.replace(' FCFA', '').replace(/\s/g, ''));
+                    total += price * item.quantity;
+                });
+                return total.toLocaleString('fr-FR') + ' FCFA';
+            };
+
+            const renderCartItems = () => {
+                const cart = getCart();
+                const cartItemsContainer = document.getElementById('cart-items-container');
+                const emptyCartMessage = document.getElementById('empty-cart-message');
+                const cartSummary = document.querySelector('.cart-summary');
+                const deliveryLocationSection = document.querySelector('.delivery-location-section');
+
+                if (cart.length === 0) {
+                    cartItemsContainer.innerHTML = ''; // Nettoyer pour ne pas dupliquer le message
+                    emptyCartMessage.style.display = 'block';
+                    cartSummary.style.display = 'none';
+                    deliveryLocationSection.style.display = 'none';
+                    document.getElementById('cart-total-price').textContent = '0 FCFA';
+                    return;
+                } else {
+                    emptyCartMessage.style.display = 'none';
+                    cartSummary.style.display = 'block';
+                    deliveryLocationSection.style.display = 'block';
+                }
+
+                let itemsHtml = '';
+                cart.forEach(item => {
+                    itemsHtml += `
+                        <div class="cart-item" data-product-id="${item.id}">
+                            <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+                            <div class="cart-item-details">
+                                <div class="cart-item-name">${item.name}</div>
+                                <div class="cart-item-price">${item.price}</div>
+                                <div class="quantity-controls">
+                                    <button class="quantity-btn decrease-quantity-btn" data-product-id="${item.id}">-</button>
+                                    <input type="number" value="${item.quantity}" min="1" class="quantity-input" data-product-id="${item.id}">
+                                    <button class="quantity-btn increase-quantity-btn" data-product-id="${item.id}">+</button>
+                                </div>
+                            </div>
+                            <button class="remove-item-btn" data-product-id="${item.id}" aria-label="Supprimer ${item.name}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    `;
+                });
+                cartItemsContainer.innerHTML = itemsHtml;
+                document.getElementById('cart-total-price').textContent = calculateTotalPrice(cart);
+
+                // Attach event listeners for quantity controls and remove buttons
+                cartItemsContainer.querySelectorAll('.increase-quantity-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const productId = e.target.closest('button').getAttribute('data-product-id');
+                        const currentCart = getCart();
+                        const itemIndex = currentCart.findIndex(item => item.id === productId);
+                        if (itemIndex > -1) {
+                            currentCart[itemIndex].quantity++;
+                            saveCart(currentCart);
+                            renderCartItems();
+                        }
+                    });
+                });
+
+                cartItemsContainer.querySelectorAll('.decrease-quantity-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const productId = e.target.closest('button').getAttribute('data-product-id');
+                        const currentCart = getCart();
+                        const itemIndex = currentCart.findIndex(item => item.id === productId);
+                        if (itemIndex > -1) {
+                            if (currentCart[itemIndex].quantity > 1) {
+                                currentCart[itemIndex].quantity--;
+                            }
+                            saveCart(currentCart);
+                            renderCartItems();
+                        }
+                    });
+                });
+
+                cartItemsContainer.querySelectorAll('.quantity-input').forEach(input => {
+                    input.addEventListener('change', (e) => {
+                        const productId = e.target.getAttribute('data-product-id');
+                        let newQuantity = parseInt(e.target.value);
+                        if (isNaN(newQuantity) || newQuantity < 1) {
+                            newQuantity = 1; // Default to 1 if invalid
+                        }
+                        const currentCart = getCart();
+                        const itemIndex = currentCart.findIndex(item => item.id === productId);
+                        if (itemIndex > -1) {
+                            currentCart[itemIndex].quantity = newQuantity;
+                            saveCart(currentCart);
+                            renderCartItems();
+                        }
+                    });
+                });
+
+                cartItemsContainer.querySelectorAll('.remove-item-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const productId = e.target.closest('button').getAttribute('data-product-id');
+                        let currentCart = getCart();
+                        currentCart = currentCart.filter(item => item.id !== productId);
+                        saveCart(currentCart);
+                        renderCartItems();
+                    });
+                });
+            };
+
+            // Initial render when page loads
+            renderCartItems();
+            updateCartCount(); // Assure que le badge est à jour au chargement de la page panier
+
+            // Handle checkout via WhatsApp
+            const checkoutWhatsappBtn = document.getElementById('checkout-whatsapp-btn');
+            const deliveryLocationSelect = document.getElementById('delivery-location');
+
+            checkoutWhatsappBtn.addEventListener('click', () => {
+                const cart = getCart();
+                if (cart.length === 0) {
+                    alert("Votre panier est vide. Veuillez ajouter des produits avant de commander.");
+                    return;
+                }
+
+                const selectedLocation = deliveryLocationSelect.value;
+                if (!selectedLocation) {
+                    alert("Veuillez sélectionner un lieu de livraison.");
+                    return;
+                }
+
+                let whatsappMessage = "Bonjour, je souhaite commander les articles suivants :\n\n";
+                cart.forEach(item => {
+                    whatsappMessage += `- ${item.name} (Qté: ${item.quantity})\n`;
+                });
+
+                whatsappMessage += `\nLieu de livraison : ${selectedLocation}`;
+                whatsappMessage += `\nTotal estimé : ${calculateTotalPrice(cart)}`;
+                whatsappMessage += `\n\nMerci !`;
+
+                window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
+                
+                // Optionnel: Vider le panier après la commande
+                // if (confirm("Votre commande a été envoyée ! Voulez-vous vider votre panier ?")) {
+                //     saveCart([]);
+                //     renderCartItems();
+                // }
+            });
+        });
+    </script>
+</body>
+</html>
