@@ -29,6 +29,11 @@ async function connectToDb() {
 
 connectToDb();
 
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/public/index.html");
+});
+
+
 // 5. Définition des routes de l'API (vos anciennes fonctions)
 
 // Route pour soumettre un avis (basée sur submit-avis.js)
