@@ -3,6 +3,7 @@
 // 1. Importation des modules nécessaires
 const express = require('express');
 const cors = require('cors');
+const compression = require('compression'); // ← Ajouté
 const { MongoClient } = require('mongodb');
 
 // 2. Initialisation de l'application Express
@@ -10,6 +11,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // 3. Middlewares pour gérer les requêtes et les ressources statiques
+app.use(compression()); // ← Ajouté : compresse automatiquement les fichiers
 app.use(express.json()); // Pour analyser les corps de requêtes au format JSON
 app.use(cors()); // Pour permettre les requêtes depuis votre front-end
 app.use(express.static('public')); // Pour servir les fichiers HTML, CSS, etc.
@@ -33,10 +35,9 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
 });
 
+// 5. Définition des routes de l'API
 
-// 5. Définition des routes de l'API (vos anciennes fonctions)
-
-// Route pour soumettre un avis (basée sur submit-avis.js)
+// Route pour soumettre un avis
 app.post('/submit-avis', async (req, res) => {
   try {
     const { nom, avis, note } = req.body;
@@ -64,7 +65,7 @@ app.post('/submit-avis', async (req, res) => {
   }
 });
 
-// Route pour récupérer les avis (basée sur get-avis.js)
+// Route pour récupérer les avis
 app.get('/get-avis', async (req, res) => {
   try {
     const database = client.db("phi-agencies");

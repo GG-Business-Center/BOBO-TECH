@@ -466,91 +466,70 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Fonctions de gestion des avis ---
-    // Fonction pour afficher un avis sur la page
-    const displayAvis = (avis) => {
-        const avisItem = document.createElement('div');
-        avisItem.classList.add('avis-item');
-        
-        let ratingHtml = '';
-        for (let i = 0; i < avis.note; i++) {
-            ratingHtml += '<i class="fas fa-star" style="color: gold;"></i>';
-        }
-
-        avisItem.innerHTML = `
-            <p class="avis-author"><strong>${avis.nom}</strong></p>
-            <p class="avis-rating">${ratingHtml}</p>
-            <p>${avis.avis}</p>
-            <span class="avis-date">${new Date(avis.date).toLocaleDateString('fr-FR')}</span>
-        `;
-        avisList.prepend(avisItem);
-    };
-
-    // Fonction pour charger les avis existants depuis le serveur
-    const loadAvis = async () => {
-        try {
-            const response = await fetch('/get-avis');
-            const avis = await response.json();
-
-            if (avis.length > 0) {
-                noAvisMessage.style.display = 'none';
-                avis.forEach(item => displayAvis(item));
-            } else {
-                noAvisMessage.style.display = 'block';
-            }
-        } catch (error) {
-            console.error('Erreur lors du chargement des avis:', error);
-            noAvisMessage.innerHTML = '<p style="color: red;">Impossible de charger les avis. Veuillez réessayer plus tard.</p>';
-            noAvisMessage.style.display = 'block';
-        }
-    };
-
-    // Événement de soumission du formulaire pour enregistrer un nouvel avis
+    // --- Gestion des avis ---
     if (avisForm) {
+        // Charger les avis existants depuis le serveur
+        const chargerAvis = async () => {
+            try {
+                const response = await fetch('/get-avis');  // ✅ route correcte
+                const avis = await response.json();
+
+                avisList.innerHTML = ''; // Reset
+
+                if (avis.length === 0) {
+                    avisList.innerHTML = `
+                        <div class="no-avis-message">
+                            <i class="fas fa-comments" style="font-size: 2em; margin-bottom: 10px;"></i>
+                            <p>Aucun avis n'a encore été publié.</p>
+                            <p>Soyez le premier à laisser le vôtre !</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                avis.forEach(item => {
+                    const avisItem = document.createElement('div');
+                    avisItem.classList.add('avis-item');
+                    avisItem.innerHTML = `
+                        <strong>${item.nom}</strong> - ⭐ ${item.note}/5
+                        <p>${item.avis}</p>
+                        <span class="avis-date">${new Date(item.date).toLocaleString()}</span>
+                    `;
+                    avisList.appendChild(avisItem);
+                });
+            } catch (err) {
+                console.error("Erreur lors du chargement des avis:", err);
+            }
+        };
+
+        // Soumission du formulaire
         avisForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const nom = nomInput.value.trim();
-            const avis = avisInput.value.trim();
-            const note = parseInt(noteInput.value);
-            const submitButton = avisForm.querySelector('button[type="submit"]');
 
-            if (nom && avis && note >= 1 && note <= 5) {
-                submitButton.disabled = true;
-                submitButton.textContent = 'Envoi en cours...';
+            const avisData = {
+                nom: nomInput.value,
+                avis: avisInput.value,     
+                note: parseInt(noteInput.value, 10)
+            };
 
-                try {
-                    const response = await fetch('/submit-avis', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ nom, avis, note }),
-                    });
+            try {
+                await fetch('/submit-avis', {  // ✅ route correcte
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(avisData)
+                });
 
-                    const result = await response.json();
+                // Réinitialiser le formulaire
+                avisForm.reset();
 
-                    if (response.ok) {
-                        alert(result.message);
-                        nomInput.value = '';
-                        avisInput.value = '';
-                        noteInput.value = '';
-                        
-                        displayAvis({ nom, avis, note, date: new Date().toISOString() });
-                        noAvisMessage.style.display = 'none';
-                    } else {
-                        alert(`Erreur: ${result.message}`);
-                    }
-                } catch (error) {
-                    console.error('Erreur de soumission de l\'avis:', error);
-                    alert('Une erreur est survenue. Veuillez réessayer.');
-                } finally {
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Envoyer mon avis';
-                }
+                // Recharger les avis
+                chargerAvis();
+            } catch (err) {
+                console.error("Erreur lors de l'envoi de l'avis:", err);
             }
         });
-    }
 
-    // Charge les avis au démarrage de la page
-    loadAvis();
+        // Charger les avis au démarrage
+        chargerAvis();
+    }
 });
