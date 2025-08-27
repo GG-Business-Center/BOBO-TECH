@@ -354,11 +354,13 @@ h2 {
 
 .product-image-container {
     width: 100%;
-    padding-top: 100%;
+    aspect-ratio: 1/1; /* carré garanti */
     position: relative;
     overflow: hidden;
     background-color: var(--light-green-tint);
+    min-height: 100px; /* sécurité pour mobiles très petits */
 }
+
 
 .product-image {
     position: absolute;
