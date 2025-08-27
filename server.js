@@ -33,14 +33,13 @@ async function connectToDb() {
     avisCollection = db.collection('avis'); // Nom de la collection
   } catch (error) {
     console.error("Erreur de connexion à MongoDB :", error);
+    throw error; // on stoppe si impossible de se connecter
   }
 }
 
-connectToDb();
-
 // 5. Route principale
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/public/index.html");
+  res.sendFile(path.join(__dirname, "public/index.html"));
 });
 
 // 6. Compression et adaptation automatique des images
@@ -53,9 +52,7 @@ app.get('/images/:filename', async (req, res) => {
       return res.status(404).send("Image non trouvée");
     }
 
-    // Largeur max pour adaptation mobile
     const width = req.query.width ? parseInt(req.query.width) : 800;
-
     const ext = path.extname(filename).toLowerCase();
     if (!['.jpg', '.jpeg', '.png', '.webp'].includes(ext)) {
       return res.sendFile(filepath); // fichier non image
@@ -78,6 +75,10 @@ app.get('/images/:filename', async (req, res) => {
 // 7. Routes API pour les avis
 app.post('/submit-avis', async (req, res) => {
   try {
+    if (!avisCollection) {
+      return res.status(500).json({ message: "La base de données n'est pas prête." });
+    }
+
     const { nom, avis, note } = req.body;
     if (!nom || !avis || !note) {
       return res.status(400).json({ message: "Les champs 'nom', 'avis' et 'note' sont requis." });
@@ -95,6 +96,10 @@ app.post('/submit-avis', async (req, res) => {
 
 app.get('/get-avis', async (req, res) => {
   try {
+    if (!avisCollection) {
+      return res.status(500).json({ message: "La base de données n'est pas prête." });
+    }
+
     const avis = await avisCollection.find({}).sort({ date: -1 }).toArray();
     res.status(200).json(avis);
   } catch (error) {
@@ -103,7 +108,17 @@ app.get('/get-avis', async (req, res) => {
   }
 });
 
-// 8. Démarrage du serveur
-app.listen(port, () => {
-  console.log(`Serveur démarré sur le port ${port}`);
-});
+// 8. Démarrage du serveur **après connexion DB**
+async function startServer() {
+  try {
+    await connectToDb();
+    app.listen(port, () => {
+      console.log(`Serveur démarré sur le port ${port}`);
+    });
+  } catch (error) {
+    console.error("Impossible de démarrer le serveur :", error);
+    process.exit(1);
+  }
+}
+
+startServer();

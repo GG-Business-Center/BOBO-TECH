@@ -14,7 +14,7 @@
 
         .avis-page-header {
             background-color: var(--primary-green);
-            padding: 15px 15px;
+            padding: 15px;
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -69,6 +69,8 @@
         .avis-list {
             margin-bottom: 30px;
             border-bottom: 1px solid var(--border-light);
+            list-style: none;
+            padding: 0;
         }
 
         .avis-item {
@@ -161,13 +163,13 @@
     </header>
 
     <main class="avis-main-container">
-        <div class="avis-list" id="avis-list">
+        <ul class="avis-list" id="avis-list">
             <div class="no-avis-message">
                 <i class="fas fa-comments" style="font-size: 2em; margin-bottom: 10px;"></i>
                 <p>Aucun avis n'a encore été publié.</p>
                 <p>Soyez le premier à laisser le vôtre !</p>
             </div>
-        </div>
+        </ul>
 
         <form class="avis-form" id="avis-form">
             <h3>Laissez votre avis</h3>
@@ -178,6 +180,72 @@
         </form>
     </main>
 
-    <script src="script.js"></script>
+    <script>
+        const avisForm = document.getElementById('avis-form');
+        const nomInput = document.getElementById('nom-input');
+        const avisInput = document.getElementById('avis-input');
+        const noteInput = document.getElementById('note-input');
+        const avisList = document.getElementById('avis-list');
+        const noAvisMessage = document.querySelector('.no-avis-message');
+
+        async function chargerAvis() {
+            try {
+                const res = await fetch("/get-avis");
+                const avis = await res.json();
+
+                avisList.innerHTML = "";
+
+                if (avis.length === 0) {
+                    if (noAvisMessage) noAvisMessage.style.display = "block";
+                    return;
+                } else {
+                    if (noAvisMessage) noAvisMessage.style.display = "none";
+                }
+
+                avis.forEach(a => {
+                    const li = document.createElement("li");
+                    li.classList.add("avis-item");
+                    li.innerHTML = `
+                        <strong>${a.nom}</strong> ⭐${a.note}<br>
+                        ${a.avis}
+                        <span class="avis-date">${new Date(a.date).toLocaleDateString()}</span>
+                    `;
+                    avisList.appendChild(li);
+                });
+            } catch (error) {
+                console.error("Erreur lors du chargement des avis :", error);
+            }
+        }
+
+        if (avisForm) {
+            avisForm.addEventListener("submit", async (e) => {
+                e.preventDefault();
+
+                const avisData = {
+                    nom: nomInput.value,
+                    avis: avisInput.value,
+                    note: noteInput.value
+                };
+
+                try {
+                    const res = await fetch("/submit-avis", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(avisData)
+                    });
+
+                    const data = await res.json();
+                    alert(data.message);
+
+                    avisForm.reset();
+                    chargerAvis();
+                } catch (error) {
+                    console.error("Erreur lors de l'envoi de l'avis :", error);
+                }
+            });
+        }
+
+        chargerAvis();
+    </script>
 </body>
 </html>
