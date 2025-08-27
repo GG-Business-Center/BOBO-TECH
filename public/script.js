@@ -7,15 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const cartCountHeader = document.getElementById('cart-item-count-header');
     const whatsappNumber = '22667472504';
 
-    // Nouvelles variables pour la gestion des avis
-    const avisForm = document.getElementById('avis-form');
-    const nomInput = document.getElementById('nom-input');
-    const avisInput = document.getElementById('avis-input');
-    const noteInput = document.getElementById('note-input');
-    const avisList = document.getElementById('avis-list');
-    const noAvisMessage = document.querySelector('.no-avis-message');
-
-    // Placeholders dynamiques pour la barre de recherche
+      // Placeholders dynamiques pour la barre de recherche
     const placeholders = [
         "Rechercher des produits...",
         "Téléphones, écouteurs, tablettes...",
@@ -466,90 +458,72 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Functions to manage reviews ---
-    
-    // Function to load existing reviews from the server
-    const chargerAvis = async () => {
-        try {
-            // Updated to use the absolute URL for your live server on Render
-            const response = await fetch('https://bobotech.onrender.com/get-avis');  
-            const avis = await response.json();
+    // ================== Gestion des avis (avis.html) ==================
 
-            // Clear the list to prevent duplicates
-            avisList.innerHTML = ''; 
+const avisForm = document.getElementById('avis-form');
+const nomInput = document.getElementById('nom-input');
+const avisInput = document.getElementById('avis-input');
+const noteInput = document.getElementById('note-input');
+const avisList = document.getElementById('avis-list');
+const noAvisMessage = document.querySelector('.no-avis-message');
 
-            if (avis.length === 0) {
-                avisList.innerHTML = `
-                    <div class="no-avis-message">
-                        <i class="fas fa-comments" style="font-size: 2em; margin-bottom: 10px;"></i>
-                        <p>Aucun avis n'a encore été publié.</p>
-                        <p>Soyez le premier à laisser le vôtre !</p>
-                    </div>
-                `;
-                return;
-            }
+// Charger les avis depuis le serveur
+async function chargerAvis() {
+    try {
+        const res = await fetch("https://bobotech.onrender.com/get-avis");
+        const avis = await res.json();
 
-            avis.forEach(item => {
-                const avisItem = document.createElement('div');
-                avisItem.classList.add('avis-item');
-                avisItem.innerHTML = `
-                    <strong>${item.nom}</strong> - ⭐ ${item.note}/5
-                    <p>${item.avis}</p>
-                    <span class="avis-date">${new Date(item.date).toLocaleString()}</span>
-                `;
-                avisList.appendChild(avisItem);
-            });
-        } catch (err) {
-            console.error("Erreur lors du chargement des avis:", err);
-            // Display an error message if loading fails
-            if (noAvisMessage) {
-                noAvisMessage.innerHTML = '<p style="color: red;">Impossible de charger les avis. Veuillez réessayer plus tard.</p>';
-                noAvisMessage.style.display = 'block';
-            }
+        avisList.innerHTML = "";
+
+        if (avis.length === 0) {
+            if (noAvisMessage) noAvisMessage.style.display = "block";
+            return;
+        } else {
+            if (noAvisMessage) noAvisMessage.style.display = "none";
         }
-    };
 
-    // Event listener for form submission to save a new review
-    if (avisForm) {
-        avisForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const avisData = {
-                nom: nomInput.value,
-                avis: avisInput.value,     
-                note: parseInt(noteInput.value, 10)
-            };
-
-            // Basic validation
-            if (!avisData.nom || !avisData.avis || !avisData.note || avisData.note < 1 || avisData.note > 5) {
-                alert("Veuillez remplir tous les champs correctement.");
-                return;
-            }
-
-            try {
-                // Updated to use the absolute URL for your live server on Render
-                const response = await fetch('https://bobotech.onrender.com/submit-avis', {  
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(avisData)
-                });
-                
-                const result = await response.json();
-
-                if (response.ok) {
-                    alert(result.message);
-                    avisForm.reset();
-                    chargerAvis(); // Reload reviews to show the new one
-                } else {
-                    alert(`Erreur: ${result.message}`);
-                }
-            } catch (err) {
-                console.error("Erreur lors de l'envoi de l'avis:", err);
-                alert("Une erreur est survenue. Veuillez réessayer.");
-            }
+        avis.forEach(a => {
+            const li = document.createElement("li");
+            li.innerHTML = `
+                <strong>${a.nom}</strong> ⭐${a.note}<br>
+                ${a.avis}
+                <br><small>${new Date(a.date).toLocaleDateString()}</small>
+            `;
+            avisList.appendChild(li);
         });
+    } catch (error) {
+        console.error("Erreur lors du chargement des avis :", error);
     }
+}
 
-    // Load reviews when the page starts
-    chargerAvis();
-});
+// Soumettre un nouvel avis
+if (avisForm) {
+    avisForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const avisData = {
+            nom: nomInput.value,
+            avis: avisInput.value,
+            note: noteInput.value
+        };
+
+        try {
+            const res = await fetch("https://bobotech.onrender.com/submit-avis", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(avisData)
+            });
+
+            const data = await res.json();
+            alert(data.message);
+
+            avisForm.reset();
+            chargerAvis(); // Recharge la liste
+        } catch (error) {
+            console.error("Erreur lors de l'envoi de l'avis :", error);
+        }
+    });
+}
+
+// Charger les avis dès que la page est prête
+chargerAvis()});
