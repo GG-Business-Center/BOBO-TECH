@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('searchInput');
     const cartCountElement = document.getElementById('cart-item-count');
     const cartCountHeader = document.getElementById('cart-item-count-header');
-    const whatsappNumber = '22667472504';
+    const whatsappNumber = '22660692928';
 
       // Placeholders dynamiques pour la barre de recherche
     const placeholders = [
